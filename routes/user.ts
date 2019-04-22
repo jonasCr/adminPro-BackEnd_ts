@@ -5,7 +5,7 @@ import bcrypt from 'bcryptjs';
 import * as auth from './../middleware/auth'
 
 
-import User from './../models/user'
+import User from '../models/mongoose/user'
 
 
 /**

@@ -1,11 +1,14 @@
 import express from 'express';
 import fileUpload from 'express-fileupload';
 import fs from 'fs';
-let app = express();
+const app = express();
 
-import User from  './../models/user';
-import Doctor from  './../models/doctor';
-import Hospital from  './../models/hospital';
+import * as User from './../models/mongoose/user' ;
+import * as Doctor from './../models/mongoose/doctor' ;
+import * as Hospital from './../models/mongoose/hospital' ;
+
+
+
 
 app.use(fileUpload());
 
@@ -132,7 +135,7 @@ function uploadByModel(model, id, fileName, res) {
             })
             break;
         case 'doctors':
-            Doctor.findById(id, (err, doctor) => {
+            Doctor.findById(id, (err, doctor:DoctorModel) => {
 
                 //Si el doctor no existe en la base de datos, borramos el fichero guardado
                 if (!doctor) {

@@ -7,10 +7,10 @@ let Schema = mongoose.Schema;
 let validRoles = {
     values: ['ADMIN_ROLE', 'USER_ROLE'],
     message: '{VALUE} no es un rol permitido'
-}
+};
 
 //Creamos el modelo
-let userSchema = new Schema({
+const userSchema = new Schema({
     //Mesage en caso de error 
     name: { type: String, required: [true, 'El nombre es necesario'], },
     email: { type: String, unique: true, required: [true, 'El correo es necesario'], },
@@ -20,8 +20,9 @@ let userSchema = new Schema({
     createdBy: { type: String, required: true }
 });
 
-userSchema.plugin(uniqueValidator, { message: '{PATH} ya existe' })
+userSchema.plugin(uniqueValidator, { message: '{PATH} ya existe' });
 
 //Exportamos el modelo
 //El nombre de la collaection en mongoose
-export default mongoose.model('user', userSchema)
+const User = mongoose.model('user', userSchema);
+export default User 

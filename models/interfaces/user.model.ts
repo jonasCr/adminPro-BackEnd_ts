@@ -1,0 +1,13 @@
+export enum Role {
+    admin = 'ADMIN_ROLE',
+    user = 'USER_ROLE'
+}
+
+export interface UserModel {
+    name: string,
+    email: string,
+    password: string,
+    image?: string,
+    role: Role,
+    createdBy?: string
+}

@@ -1,9 +1,9 @@
 import express from 'express';
 let app = express();
 
-import Hospital from './../models/hospital';
-import Doctor from './../models/doctor';
-import User from './../models/user';
+import Hospital from '../models/mongoose/hospital';
+import Doctor from '../models/mongoose/doctor';
+import User from '../models/mongoose/user';
 
 //Rutas
 

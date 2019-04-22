@@ -1,16 +1,10 @@
 import express from 'express';
 let app = express();
-import bcrypt from 'bcryptjs';
 
 import * as auth from './../middleware/auth';
 
-// import jwt from 'jsonwebtoken';
+import * as Hospital from './../models/mongoose/hospital'
 
-// const SEED from './../config/config').SED
-
-import Hospital from './../models/hospital';
-
-//Main logic
 /**
  * Devuelve la lista de los hospitales
  */

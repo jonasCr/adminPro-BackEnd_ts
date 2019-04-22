@@ -5,7 +5,7 @@
     "main": "index.js",
     "scripts": {
         "tsc": "tsc",
-        "tsc-watch" : "tsc --watch",
+        "tsc-watch": "tsc --watch",
         "build": "tsc --watch && nodemon build/app.js",
         "start": "nodemon build/app.js",
         "test": "echo \"Error: no test specified\" && exit 1"
@@ -13,6 +13,7 @@
     "author": "jonasCr",
     "license": "ISC",
     "dependencies": {
+        "@types/express-fileupload": "^0.4.0",
         "bcryptjs": "^2.4.3",
         "body-parser": "^1.18.3",
         "express": "^4.16.4",
@@ -20,7 +21,6 @@
         "jsonwebtoken": "^8.5.1",
         "mongoose": "^5.5.2",
         "mongoose-unique-validator": "^2.0.3"
-
     },
     "devDependencies": {
         "typescript": "^3.4.4",

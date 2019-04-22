@@ -6,13 +6,14 @@ import SEED from './../config/config'
 
 let app = express();
 
-import User from './../models/user';
+import User from '../models/mongoose/user';
+import { UserModel } from '../models/interfaces';
 
 app.post('/', (req, res) => {
 
     let body = req.body;
 
-    User.findOne({ email: body.userName }, (err, user) => {
+    User.findOne({ email: body.userName }, (err, user:UserModel) => {
 
         //Si occure un error en la BBDD
         if (err) {
