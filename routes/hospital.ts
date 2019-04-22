@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request } from 'express';
 let app = express();
 
 import * as auth from './../middleware/auth';
@@ -52,7 +52,7 @@ app.get('/', (req, res) => {
 /**
  * Crea un hospital y lo devuelve
  */
-app.post('/', auth.checkToken, (req, res) => {
+app.post('/', auth.checkToken, (req:any, res) => {
     let body = req.body;
     let userlogged = req.user
 

@@ -116,9 +116,9 @@ app.put('/:id', auth.checkToken, (req:any, res:any) => {
         }
         doctor.name = body.name ? body.name : doctor.name;
         doctor.image = body.image ? body.image : doctor.image;
-        doctor.hospital = body.idHospital ? body.idHospital : doctor.idHospital;
-        doctor.user = body.idUser ? body.idUser : doctor.idUser;
-        doctor.save((err:any, updatedDoctor:any) => {
+        doctor.hospital = body.hospital ? body.hospital : doctor.hospital;
+        doctor.user = body.user ? body.user : doctor.user;
+        doctor.save((err:any, updatedDoctor:DoctorModel) => {
             if (err) {
                 return res.status(400).json({
                     ok: false,
