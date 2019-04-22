@@ -1,7 +1,8 @@
-import mongoose from 'mongoose';
+import mongoose, { Model, model } from 'mongoose';
 import uniqueValidator from 'mongoose-unique-validator';
 
 import Schema = mongoose.Schema;
+import { DoctorModel } from '../interfaces';
 
 let doctorSchema = new Schema({
     name: { type: String, required: [true, 'El nombre es necesario'] },
@@ -14,4 +15,4 @@ let doctorSchema = new Schema({
     }
 }, { collection: 'doctors' })
 
-export default mongoose.model('doctor', doctorSchema)
+export const Doctor: Model<DoctorModel> = model<DoctorModel>('doctor', doctorSchema)

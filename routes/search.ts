@@ -1,9 +1,10 @@
 import express from 'express';
 let app = express();
 
-import Hospital from '../models/mongoose/hospital';
-import Doctor from '../models/mongoose/doctor';
-import User from '../models/mongoose/user';
+import {Hospital} from '../models/mongoose/hospital';
+import {Doctor} from '../models/mongoose/doctor';
+import {User} from '../models/mongoose/user';
+import { DoctorModel, HospitalModel, UserModel } from '../models/interfaces';
 
 //Rutas
 
@@ -88,7 +89,7 @@ function searchHospital(query) {
         Hospital.find({ name: regEx })
             .populate('updatedBy', 'name email')
             .exec(
-                (err, results) => {
+                (err, results:HospitalModel) => {
                     if (err) {
                         reject(err)
                     } else {
@@ -105,7 +106,7 @@ function searchDoctors(query) {
             .populate('user', 'name email role')
             .populate('hospital')
             .exec(
-                (err, results) => {
+                (err, results:DoctorModel) => {
                     if (err) {
                         reject(err)
                     } else {
@@ -120,7 +121,7 @@ function searchUsers(query) {
     return new Promise((resolve, reject) => {
         User.find({}, 'name email role').or([{ 'name': regEx }, { 'email': regEx }])
             .exec(
-                (err, results) => {
+                (err, results:UserModel) => {
                     if (err) {
                         reject(err)
                     } else {

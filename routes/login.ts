@@ -6,7 +6,7 @@ import SEED from './../config/config'
 
 let app = express();
 
-import User from '../models/mongoose/user';
+import {User} from '../models/mongoose';
 import { UserModel } from '../models/interfaces';
 
 app.post('/', (req, res) => {

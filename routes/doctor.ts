@@ -1,3 +1,5 @@
+import { DoctorModel } from "../models/interfaces";
+
 let express = require('express');
 let app = express();
 let bcrypt = require('bcryptjs');
@@ -8,7 +10,7 @@ let auth = require('./../middleware/auth');
 
 // const SEED = require('./../config/config').SEED
 
-let Doctor = require('./../models/doctor');
+import {Doctor} from './../models/mongoose'
 let User = require('./../models/user')
 
 //Main logic
@@ -25,7 +27,7 @@ app.get('/', (req:any, res:any) => {
         .populate('user', 'name email')
         .populate('hospital')
         .exec(
-            (err, doctors) => {
+            (err, doctors:DoctorModel) => {
                 if (err) {
                     return res.status(500).json({
                         ok: false,
@@ -72,7 +74,7 @@ app.post('/', auth.checkToken, (req:any, res:any) => {
         idHospital: body.idHospital,
     })
 
-    doctor.save((err:any, newDoctor:any) => {
+    doctor.save((err:any, newDoctor:DoctorModel) => {
         if (err) {
             return res.status(500).json({
                 ok: false,
@@ -98,7 +100,7 @@ app.put('/:id', auth.checkToken, (req:any, res:any) => {
     let body = req.body;
     let userlogged = req.user;
 
-    Doctor.findById(id, (err:any, doctor:any) => {
+    Doctor.findById(id, (err:any, doctor:DoctorModel) => {
         if (err) {
             return res.status(500).json({
                 ok: false,
@@ -114,8 +116,8 @@ app.put('/:id', auth.checkToken, (req:any, res:any) => {
         }
         doctor.name = body.name ? body.name : doctor.name;
         doctor.image = body.image ? body.image : doctor.image;
-        doctor.idHospital = body.idHospital ? body.idHospital : doctor.idHospital;
-        doctor.idUser = body.idUser ? body.idUser : doctor.idUser;
+        doctor.hospital = body.idHospital ? body.idHospital : doctor.idHospital;
+        doctor.user = body.idUser ? body.idUser : doctor.idUser;
         doctor.save((err:any, updatedDoctor:any) => {
             if (err) {
                 return res.status(400).json({
@@ -139,7 +141,7 @@ app.delete('/:id', auth.checkToken, (req:any, res:any) => {
     let id = req.params.id
     let userlogged = req.user;
 
-    Doctor.findByIdAndRemove(id, (err:any, deletedDoctor:any) => {
+    Doctor.findByIdAndRemove(id, (err:any, deletedDoctor:DoctorModel) => {
         if (err) {
             return res.status(500).json({
                 ok: false,

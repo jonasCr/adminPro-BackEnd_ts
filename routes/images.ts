@@ -27,11 +27,6 @@ app.get('/:model/:id', (req, res, next) => {
 
     fs.existsSync(url) ? res.sendFile(url) : res.sendFile(urlDefault);
 
-
-    // res.status(200).json({
-    //     ok: true,
-    //     result: path
-    // })
 })
 
 function isModelValid(model) {

@@ -1,5 +1,6 @@
-import mongoose from 'mongoose';
+import mongoose, { Model, model } from 'mongoose';
 import uniqueValidator from 'mongoose-unique-validator';
+import { UserModel } from '../interfaces';
 
 let Schema = mongoose.Schema;
 
@@ -24,5 +25,4 @@ userSchema.plugin(uniqueValidator, { message: '{PATH} ya existe' });
 
 //Exportamos el modelo
 //El nombre de la collaection en mongoose
-const User = mongoose.model('user', userSchema);
-export default User 
+export const User: Model<UserModel> = model<UserModel>('doctor', userSchema)

@@ -3,7 +3,8 @@ let app = express();
 
 import * as auth from './../middleware/auth';
 
-import * as Hospital from './../models/mongoose/hospital'
+import {Hospital} from './../models/mongoose/'
+import { HospitalModel } from '../models/interfaces';
 
 /**
  * Devuelve la lista de los hospitales
@@ -17,7 +18,7 @@ app.get('/', (req, res) => {
         .limit(5)
         .populate('updatedBy', 'name email')
         .exec(
-            (err, hospitals) => {
+            (err, hospitals:HospitalModel) => {
                 if (err) {
                     return res.status(500).json({
                         ok: false,
@@ -61,7 +62,7 @@ app.post('/', auth.checkToken, (req, res) => {
         image: body.image,
     })
 
-    hospital.save((err, newHospital) => {
+    hospital.save((err, newHospital:HospitalModel) => {
         if (err) {
             return res.status(500).json({
                 ok: false,
@@ -87,7 +88,7 @@ app.put('/:id', auth.checkToken, (req, res) => {
     let body = req.body;
     let userlogged = req.user;
 
-    Hospital.findById(id, (err, hospital:any) => {
+    Hospital.findById(id, (err, hospital:HospitalModel) => {
         if (err) {
             return res.status(500).json({
                 ok: false,
@@ -103,7 +104,7 @@ app.put('/:id', auth.checkToken, (req, res) => {
         }
         hospital.name = body.name ? body.name : hospital.name;
         hospital.updatedBy = req.user._id;
-        hospital.save((err:any, updatedHospital) => {
+        hospital.save((err:any, updatedHospital:HospitalModel) => {
             if (err) {
                 return res.status(400).json({
                     ok: false,
