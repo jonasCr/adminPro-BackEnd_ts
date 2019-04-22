@@ -5,13 +5,14 @@ import bcrypt from 'bcryptjs';
 import * as auth from './../middleware/auth'
 
 
-import User from '../models/mongoose/user'
+import {User} from '../models/mongoose/user'
+import { CustomRequest } from '../models';
 
 
 /**
  * Obtiene todo los usuarios de la base de datos
  */
-app.get('/', (req:any, res:any) => {
+app.get('/', (req:CustomRequest, res:any) => {
 
     let startFrom = req.query.startWith || 0
     startFrom = Number(startFrom);

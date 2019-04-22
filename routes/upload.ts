@@ -3,9 +3,10 @@ import fileUpload from 'express-fileupload';
 import fs from 'fs';
 const app = express();
 
-import * as User from './../models/mongoose/user' ;
-import * as Doctor from './../models/mongoose/doctor' ;
-import * as Hospital from './../models/mongoose/hospital' ;
+import {User} from './../models/mongoose/user' ;
+import {Doctor} from './../models/mongoose/doctor' ;
+import {Hospital} from './../models/mongoose/hospital' ;
+import { DoctorModel } from '../models';
 
 
 
@@ -117,7 +118,7 @@ function uploadByModel(model, id, fileName, res) {
 
                 //Si existe la imagen la eliminamos
                 if (fs.existsSync(oldPath)) {
-                    fs.unlink(oldPath)
+                    fs.unlink(oldPath,err => console.error(err))
                 }
 
 

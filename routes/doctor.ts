@@ -141,7 +141,7 @@ app.delete('/:id', auth.checkToken, (req:any, res:any) => {
     let id = req.params.id
     let userlogged = req.user;
 
-    Doctor.findByIdAndRemove(id, (err:any, deletedDoctor:DoctorModel) => {
+    Doctor.findByIdAndRemove(id, (err:any, deletedDoctor:any) => {
         if (err) {
             return res.status(500).json({
                 ok: false,

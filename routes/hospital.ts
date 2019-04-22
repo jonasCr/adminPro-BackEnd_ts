@@ -4,7 +4,8 @@ let app = express();
 import * as auth from './../middleware/auth';
 
 import {Hospital} from './../models/mongoose/'
-import { HospitalModel } from '../models/interfaces';
+import { HospitalModel, CustomRequest } from '../models/interfaces';
+import { Response } from '../models';
 
 /**
  * Devuelve la lista de los hospitales
@@ -83,12 +84,21 @@ app.post('/', auth.checkToken, (req:any, res) => {
 /**
  * Actualiza un hospital y lo devuelve
  */
-app.put('/:id', auth.checkToken, (req, res) => {
+app.put('/:id', auth.checkToken, (req:CustomRequest, res) => {
     let id = req.params.id
-    let body = req.body;
+    let body:HospitalModel = req.body;
     let userlogged = req.user;
 
     Hospital.findById(id, (err, hospital:HospitalModel) => {
+
+        let response = new Response<HospitalModel>(err,hospital);
+
+        if (response.error) {
+            return res.status(response.getStatus()).json({response})
+        }
+
+
+        /*
         if (err) {
             return res.status(500).json({
                 ok: false,
@@ -101,10 +111,17 @@ app.put('/:id', auth.checkToken, (req, res) => {
                 ok: false,
                 result: `El hospital con id ${id} no existe`
             })
-        }
+        }*/
         hospital.name = body.name ? body.name : hospital.name;
-        hospital.updatedBy = req.user._id;
+        hospital.updatedBy = userlogged._id;
+
+
         hospital.save((err:any, updatedHospital:HospitalModel) => {
+            response = new Response(err, updatedHospital, 'Hospital guardado');
+
+            return res.status(response.getStatus()).json({response})
+
+            /* 
             if (err) {
                 return res.status(400).json({
                     ok: false,
@@ -115,7 +132,7 @@ app.put('/:id', auth.checkToken, (req, res) => {
             res.status(200).json({
                 ok: true,
                 result: updatedHospital
-            })
+            })*/
         })
     })
 
@@ -124,7 +141,7 @@ app.put('/:id', auth.checkToken, (req, res) => {
 /**
  * Elimina un hospital y devuelve el hospital eliminado
  */
-app.delete('/:id', auth.checkToken, (req, res) => {
+app.delete('/:id', auth.checkToken, (req:CustomRequest, res) => {
     let id = req.params.id
     let userlogged = req.user;
 
