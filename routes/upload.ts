@@ -1,12 +1,12 @@
-import express from 'express';
-import fileUpload from 'express-fileupload';
+import express, { Response } from 'express';
+import fileUpload, { UploadedFile } from 'express-fileupload';
 import fs from 'fs';
 const app = express();
 
 import {User} from './../models/mongoose/user' ;
 import {Doctor} from './../models/mongoose/doctor' ;
 import {Hospital} from './../models/mongoose/hospital' ;
-import { DoctorModel } from '../models';
+import { DoctorModel, CustomRequest, UserModel, HospitalModel } from '../models';
 
 
 
@@ -16,10 +16,10 @@ app.use(fileUpload());
 /**
  * Upload the file in the server depending of the model that we pass
  */
-app.put('/:model/:id', (req:any, res:any) => {
+app.put('/:model/:id', (req:CustomRequest, res:any) => {
 
-    let model = req.params.model
-    let id = req.params.id
+    let model:string = req.params.model;
+    let id:string = req.params.id;
 
 
     //Comprobamos si el modelo existe
@@ -73,17 +73,17 @@ app.put('/:model/:id', (req:any, res:any) => {
 
 })
 
-function getFileType(file) {
+function getFileType(file:any) {
     let nameA = file.name.split('.');
     return nameA[nameA.length - 1]
 }
 
-function isTypeAccepted(type) {
+function isTypeAccepted(type:string) {
     let acceptedTypes = ['png', 'jpg', 'gif', 'jpeg'];
     return acceptedTypes.includes(type);
 }
 
-function isModelValid(model) {
+function isModelValid(model:string) {
     let validModel = ['doctors', 'users', 'hospitals'];
     return validModel.includes(model);
 }
@@ -98,10 +98,10 @@ function handleError(err, res, message) {
     }
 }
 
-function uploadByModel(model, id, fileName, res) {
+function uploadByModel(model:string, id:string, fileName:string, res:Response) {
     switch (model) {
         case 'users':
-            User.findById(id, (err, user) => {
+            User.findById(id, (err, user:UserModel) => {
 
                 //Si el usuario no existe en la base de datos, borramos el fichero guardado
                 if (!user) {
@@ -124,7 +124,7 @@ function uploadByModel(model, id, fileName, res) {
 
                 //Actualizamos el usuario
                 user.image = fileName;
-                user.save((err, updatedUser) => {
+                user.save((err, updatedUser:UserModel) => {
                     updatedUser.password = 'NOPE';
                     return res.status(200).json({
                         ok: true,
@@ -160,7 +160,7 @@ function uploadByModel(model, id, fileName, res) {
 
                 //Actualizamos el registro
                 doctor.image = fileName;
-                doctor.save((err, updatedDoctor) => {
+                doctor.save((err, updatedDoctor:DoctorModel) => {
                     return res.status(200).json({
                         ok: true,
                         result: 'Doctor image saved',
@@ -171,7 +171,7 @@ function uploadByModel(model, id, fileName, res) {
             })
             break;
         case 'hospitals':
-            Hospital.findById(id, (err, hospital) => {
+            Hospital.findById(id, (err, hospital:HospitalModel) => {
                 //Si el hospital no existe en la base de datos, borramos el fichero guardado
                 if (!hospital) {
                     fs.unlink('./contents/hospitals/' + fileName, e => {
@@ -194,7 +194,7 @@ function uploadByModel(model, id, fileName, res) {
 
                 //Actualizamos el registro
                 hospital.image = fileName;
-                hospital.save((err, updatedHospital) => {
+                hospital.save((err, updatedHospital:HospitalModel) => {
                     if (err) {
                         fs.unlink('./contents/hospitals/' + fileName, e => {
                             console.error(e)

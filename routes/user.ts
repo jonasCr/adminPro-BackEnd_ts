@@ -6,7 +6,7 @@ import * as auth from './../middleware/auth'
 
 
 import {User} from '../models/mongoose/user'
-import { CustomRequest } from '../models';
+import { CustomRequest, UserModel } from '../models';
 
 
 /**
@@ -21,7 +21,7 @@ app.get('/', (req:CustomRequest, res:any) => {
         .skip(startFrom)
         .limit(5)
         .exec(
-            (err:any, user:any) => {
+            (err:any, user:UserModel) => {
                 if (err) {
                     return res.status(500).json({
                         ok: false,
@@ -30,7 +30,7 @@ app.get('/', (req:CustomRequest, res:any) => {
                     })
                 }
 
-                User.count({}, (err:any, count:any) => {
+                User.count({}, (err:any, count:number) => {
                     if (err) {
                         return res.status(500).json({
                             ok: false,
@@ -50,7 +50,7 @@ app.get('/', (req:CustomRequest, res:any) => {
 /**
  * Crea una nuevo usuario y lo devuelve
  */
-app.post('/', auth.checkToken, (req:any, res:any) => {
+app.post('/', auth.checkToken, (req:CustomRequest, res:any) => {
     let body = req.body;
     let userlogged = req.user
 
@@ -63,7 +63,7 @@ app.post('/', auth.checkToken, (req:any, res:any) => {
         createdBy: req.user._id
     })
 
-    user.save((err:any, newUser:any) => {
+    user.save((err:any, newUser:UserModel) => {
         if (err) {
             return res.status(500).json({
                 ok: false,
@@ -84,13 +84,13 @@ app.post('/', auth.checkToken, (req:any, res:any) => {
  * Actualiza un usuario y lo devuelve
  */
 
-app.put('/:id', auth.checkToken, (req:any, res:any) => {
+app.put('/:id', auth.checkToken, (req:CustomRequest, res:any) => {
 
     let id = req.params.id;
     let body = req.body;
     let userlogged = req.user
 
-    User.findById(id, (err:any, user:any) => {
+    User.findById(id, (err:any, user:UserModel) => {
         if (err) {
             return res.status(500).json({
                 ok: false,
@@ -110,7 +110,7 @@ app.put('/:id', auth.checkToken, (req:any, res:any) => {
         user.email = body.email;
         user.role = user.role;
 
-        user.save((err:any, updatedUser:any) => {
+        user.save((err:any, updatedUser:UserModel) => {
             if (err) {
                 return res.status(400).json({
                     ok: false,
@@ -134,11 +134,11 @@ app.put('/:id', auth.checkToken, (req:any, res:any) => {
 /**
  * Elimina un usuario y devuelve el usuario eliminado
  */
-app.delete('/:id', auth.checkToken, (req:any, res:any) => {
+app.delete('/:id', auth.checkToken, (req:CustomRequest, res:any) => {
     let id = req.params.id;
     let userlogged = req.user
 
-    User.findByIdAndRemove(id, (err:any, deletedUser:any) => {
+    User.findByIdAndRemove(id, (err:any, deletedUser:UserModel) => {
 
         if (err) {
             return res.status(500).json({

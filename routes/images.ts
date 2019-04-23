@@ -1,14 +1,16 @@
-let express = require('express');
+import { CustomRequest } from "../models";
+
+import express from 'express';
 let app = express();
-let path = require('path');
-let fs = require('fs')
+import path from 'path';
+import fs from 'fs';
 
 
 //Rutas
-app.get('/:model/:id', (req, res, next) => {
+app.get('/:model/:fileName', (req:CustomRequest, res, next) => {
 
-    let model = req.params.model
-    let fileName = req.params.id
+    let model:string = req.params.model;
+    let fileName:string = req.params.fileName;
 
 
 
@@ -29,7 +31,7 @@ app.get('/:model/:id', (req, res, next) => {
 
 })
 
-function isModelValid(model) {
+function isModelValid(model:string) {
     let validModel = ['doctors', 'users', 'hospitals'];
     return validModel.includes(model);
 }

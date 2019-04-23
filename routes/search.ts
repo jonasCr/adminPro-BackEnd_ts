@@ -4,18 +4,18 @@ let app = express();
 import {Hospital} from '../models/mongoose/hospital';
 import {Doctor} from '../models/mongoose/doctor';
 import {User} from '../models/mongoose/user';
-import { DoctorModel, HospitalModel, UserModel } from '../models/interfaces';
+import { DoctorModel, HospitalModel, UserModel, CustomRequest } from '../models/interfaces';
 
 //Rutas
 
 /**
  * Realiza una busqueda en todo los campos
  */
-app.get('/:query', async(req, res, next) => {
+app.get('/:query', async(req:CustomRequest, res, next) => {
 
     let query = req.params.query;
     //crear una expresion regular para buscar en la collection
-    let regEx = new RegExp(query, 'i')
+    //let regEx = new RegExp(query, 'i')
 
     let promises:Promise<any>[] = []
     promises.push(searchHospital(query))
@@ -43,7 +43,7 @@ app.get('/:query', async(req, res, next) => {
 })
 
 /** */
-app.post('/', async(req, res) => {
+app.post('/', async(req:CustomRequest, res) => {
     let searchBy = req.body.searchBy; //{table: 'aaa', query: ''} 
     let query = req.body.query;
 

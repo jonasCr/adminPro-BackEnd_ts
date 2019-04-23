@@ -4,5 +4,6 @@ export interface DoctorModel extends Document{
     name:string,
     user:string,
     hospital: string,
-    image?:string
+    image?:string,
+    updatedBy:string,
 }

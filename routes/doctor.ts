@@ -1,17 +1,11 @@
-import { DoctorModel } from "../models/interfaces";
+import { DoctorModel, CustomRequest } from "../models/interfaces";
 
-let express = require('express');
+import express, { Response } from 'express';
 let app = express();
-let bcrypt = require('bcryptjs');
 
-let auth = require('./../middleware/auth');
-
-// let jwt = require('jsonwebtoken');
-
-// const SEED = require('./../config/config').SEED
+import * as auth from './../middleware/auth';
 
 import {Doctor} from './../models/mongoose'
-let User = require('./../models/user')
 
 //Main logic
 /**
@@ -62,7 +56,7 @@ app.get('/', (req:any, res:any) => {
 /**
  * Crea un Doctor y lo devuelve
  */
-app.post('/', auth.checkToken, (req:any, res:any) => {
+app.post('/', auth.checkToken, (req:CustomRequest, res:Response) => {
     let test = req.query
     let body = req.body;
     let userlogged = req.user
@@ -70,8 +64,8 @@ app.post('/', auth.checkToken, (req:any, res:any) => {
     let doctor = new Doctor({
         name: body.name,
         image: body.image,
-        idUser: body.idUser,
-        idHospital: body.idHospital,
+        user: body.user,
+        hospital: body.hospital,
     })
 
     doctor.save((err:any, newDoctor:DoctorModel) => {
@@ -95,7 +89,7 @@ app.post('/', auth.checkToken, (req:any, res:any) => {
 /**
  * Actualiza un Doctor y lo devuelve
  */
-app.put('/:id', auth.checkToken, (req:any, res:any) => {
+app.put('/:id', auth.checkToken, (req:CustomRequest, res:Response) => {
     let id = req.params.id
     let body = req.body;
     let userlogged = req.user;
@@ -118,6 +112,7 @@ app.put('/:id', auth.checkToken, (req:any, res:any) => {
         doctor.image = body.image ? body.image : doctor.image;
         doctor.hospital = body.hospital ? body.hospital : doctor.hospital;
         doctor.user = body.user ? body.user : doctor.user;
+        doctor.updatedBy = userlogged._id
         doctor.save((err:any, updatedDoctor:DoctorModel) => {
             if (err) {
                 return res.status(400).json({
@@ -137,11 +132,11 @@ app.put('/:id', auth.checkToken, (req:any, res:any) => {
 /**
  * Elimina un Doctor y devuelve el Doctor eliminado
  */
-app.delete('/:id', auth.checkToken, (req:any, res:any) => {
+app.delete('/:id', auth.checkToken, (req:CustomRequest, res:any) => {
     let id = req.params.id
     let userlogged = req.user;
 
-    Doctor.findByIdAndRemove(id, (err:any, deletedDoctor:any) => {
+    Doctor.findByIdAndRemove(id, (err:any, deletedDoctor) => {
         if (err) {
             return res.status(500).json({
                 ok: false,

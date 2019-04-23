@@ -10,4 +10,4 @@ export let hospitalSchema = new Schema({
     updatedBy: { type: Schema.Types.ObjectId, ref: 'user' }
 }, { collection: 'hospitals' });
 
-export const Hospital: Model<HospitalModel> = model<HospitalModel>('hospital', hospitalSchema) //mongoose.model('hospital', hospitalSchema)
+export const Hospital: Model<HospitalModel> = model<HospitalModel>('Hospital', hospitalSchema) //mongoose.model('hospital', hospitalSchema)

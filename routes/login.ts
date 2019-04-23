@@ -7,9 +7,9 @@ import SEED from './../config/config'
 let app = express();
 
 import {User} from '../models/mongoose';
-import { UserModel } from '../models/interfaces';
+import { UserModel, CustomRequest } from '../models/interfaces';
 
-app.post('/', (req, res) => {
+app.post('/', (req:CustomRequest, res) => {
 
     let body = req.body;
 

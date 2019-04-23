@@ -10,7 +10,7 @@ import { Response } from '../models';
 /**
  * Devuelve la lista de los hospitales
  */
-app.get('/', (req, res) => {
+app.get('/', (req:CustomRequest, res) => {
     let startFrom = req.query.startWith || 0
     startFrom = Number(startFrom);
 
@@ -53,7 +53,7 @@ app.get('/', (req, res) => {
 /**
  * Crea un hospital y lo devuelve
  */
-app.post('/', auth.checkToken, (req:any, res) => {
+app.post('/', auth.checkToken, (req:CustomRequest, res) => {
     let body = req.body;
     let userlogged = req.user
 
