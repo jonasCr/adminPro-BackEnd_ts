@@ -7,7 +7,6 @@ import * as auth from './../middleware/auth';
 import {Doctor} from './../models/mongoose'
 import { ResponseCustom } from "../models";
 
-//Main logic
 /**
  * Devuelve la lista de los hospitales
  */
@@ -57,7 +56,7 @@ app.get('/', (req:any, res:any) => {
  * Crea un Doctor y lo devuelve
  */
 app.post('/', auth.checkToken, (req:CustomRequest, res:Response) => {
-    let body = req.body;
+    let body:DoctorModel = req.body;
     let userlogged = req.user
 
     let doctor = new Doctor({

@@ -3,6 +3,8 @@
  */
 export enum ErrorsCustom {
     notFound = 1,
+    wrongPassword,
+    userUnauthorize
 }
 
 export class Error{
@@ -23,7 +25,10 @@ export class Error{
     getMessageError(error:any):string{
         switch (error) {
             case ErrorsCustom.notFound:
-                return 'No se ha encontrado ningún {{model}}'
+                return 'No se ha encontrado ningún registro';
+            case ErrorsCustom.wrongPassword:
+                return 'La contraseña no es correcta';
+
             default:
                 console.error(error);
                 return 'Ha occurido un error desconocido'
@@ -32,6 +37,12 @@ export class Error{
 
     getStatus():number{
         switch (this.error) {
+            case ErrorsCustom.notFound:
+                return 400;
+            case ErrorsCustom.wrongPassword:
+                return 401;
+            case ErrorsCustom.userUnauthorize:
+                return 401;
             default:
                 return 500;
         }

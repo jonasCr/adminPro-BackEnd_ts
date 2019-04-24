@@ -11,5 +11,6 @@ export interface UserModel extends Document{
     password: string,
     image?: string,
     role: Role,
-    createdBy?: string
+    createdBy?: string,
+    token?:string
 }

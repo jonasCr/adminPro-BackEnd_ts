@@ -8,7 +8,7 @@ let app = express();
 
 import {User} from '../models/mongoose';
 import { UserModel, CustomRequest } from '../models/interfaces';
-import { ResponseCustom } from '../models';
+import { ResponseCustom, ErrorsCustom, Error } from '../models';
 
 app.post('/', (req:CustomRequest, res) => {
 
@@ -38,22 +38,16 @@ app.post('/', (req:CustomRequest, res) => {
         */
         //Si la contraseña es incorrecta
         if (!bcrypt.compareSync(body.password, user.password)) {
-            response.result = null
-            return res.status(400).json({
-                ok: false,
-                result: 'La contraseña es incorrecta',
-            })
+            response.result = null;
+            response.error = new Error(ErrorsCustom.wrongPassword);
+            return res.status(response.getStatus()).json(response);
         }
 
-        user.password = "NOPE";
+        delete user.password;
         //Crear el token
-        let token = jwt.sign({ user: user }, SEED, { expiresIn: 14400 }) //4 horas
+        user.token = jwt.sign({ user: user }, SEED, { expiresIn: 14400 }) //4 horas
 
-        res.status(200).json({
-            ok: true,
-            token: token,
-            result: user
-        })
+        res.status(response.getStatus()).json(response)
     })
 
 
