@@ -5,7 +5,7 @@ import * as auth from './../middleware/auth';
 
 import {Hospital} from './../models/mongoose/'
 import { HospitalModel, CustomRequest } from '../models/interfaces';
-import { Response } from '../models';
+import { ResponseCustom } from '../models';
 
 /**
  * Devuelve la lista de los hospitales
@@ -20,30 +20,36 @@ app.get('/', (req:CustomRequest, res) => {
         .populate('updatedBy', 'name email')
         .exec(
             (err, hospitals:HospitalModel) => {
+                let response = new ResponseCustom<HospitalModel[]>(err, hospitals);
+                /*
                 if (err) {
                     return res.status(500).json({
                         ok: false,
                         message: 'Error en la base de datos',
                         errors: err
                     })
-                }
+                }*/
 
-                Hospital.count({}, (err, count) => {
+                if (!response.error){
+                    Hospital.count({}, (err, count) => {
+                        response.updateError(err);
+                        if (!response.error) {
+                            response.count = count;
+                        }
+                    /*
                     if (err) {
                         return res.status(500).json({
                             ok: false,
                             message: 'Error en la base de datos',
                             errors: err
                         })
-                    }
-                    res.status(200).json({
-                        ok: true,
-                        result: hospitals,
-                        total: count
+                    }*/
+                       
                     })
-                })
 
+                }
 
+                res.status(response.getStatus()).json(response);
             })
 
 
@@ -91,7 +97,7 @@ app.put('/:id', auth.checkToken, (req:CustomRequest, res) => {
 
     Hospital.findById(id, (err, hospital:HospitalModel) => {
 
-        let response = new Response<HospitalModel>(err,hospital);
+        let response = new ResponseCustom<HospitalModel>(err,hospital);
 
         if (response.error) {
             return res.status(response.getStatus()).json({response})
@@ -117,7 +123,7 @@ app.put('/:id', auth.checkToken, (req:CustomRequest, res) => {
 
 
         hospital.save((err:any, updatedHospital:HospitalModel) => {
-            response = new Response(err, updatedHospital, 'Hospital guardado');
+            response = new ResponseCustom(err, updatedHospital, 'Hospital guardado');
 
             return res.status(response.getStatus()).json({response})
 

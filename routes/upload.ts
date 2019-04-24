@@ -39,7 +39,7 @@ app.put('/:model/:id', (req:CustomRequest, res:any) => {
         })
     }
 
-    let file = req.files.file;
+    let file:any = req.files.file;
     let fileType = getFileType(file)
 
     //Comprobamos que la extension es valida

@@ -1,4 +1,9 @@
-import { ErrorsCustom } from "./response.model";
+/**
+ * A completar en funcion de lo que suje
+ */
+export enum ErrorsCustom {
+    notFound = 1,
+}
 
 export class Error{
     /**
@@ -6,7 +11,7 @@ export class Error{
      */
     message:string = 'Un error ha occurido';
     /**
-     * MAs detalle para el desarollador destinido a estar lanzado en un console.error
+     * Mas detalle para el desarollador destinido a estar lanzado en un console.error
      */
     error: any;
 
@@ -18,7 +23,7 @@ export class Error{
     getMessageError(error:any):string{
         switch (error) {
             case ErrorsCustom.notFound:
-                return 'No se ha encontrado nigun registro'
+                return 'No se ha encontrado ningún {{model}}'
             default:
                 console.error(error);
                 return 'Ha occurido un error desconocido'

@@ -8,6 +8,7 @@ let app = express();
 
 import {User} from '../models/mongoose';
 import { UserModel, CustomRequest } from '../models/interfaces';
+import { ResponseCustom } from '../models';
 
 app.post('/', (req:CustomRequest, res) => {
 
@@ -15,6 +16,9 @@ app.post('/', (req:CustomRequest, res) => {
 
     User.findOne({ email: body.userName }, (err, user:UserModel) => {
 
+        let response = new ResponseCustom<UserModel>(err, user)
+
+        /*
         //Si occure un error en la BBDD
         if (err) {
             return res.status(500).json({
@@ -31,9 +35,10 @@ app.post('/', (req:CustomRequest, res) => {
                 result: `No existe el usuario ${body.userName}`
             })
         }
-
+        */
         //Si la contraseña es incorrecta
         if (!bcrypt.compareSync(body.password, user.password)) {
+            response.result = null
             return res.status(400).json({
                 ok: false,
                 result: 'La contraseña es incorrecta',

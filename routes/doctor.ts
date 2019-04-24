@@ -1,11 +1,11 @@
 import { DoctorModel, CustomRequest } from "../models/interfaces";
-
 import express, { Response } from 'express';
 let app = express();
 
 import * as auth from './../middleware/auth';
 
 import {Doctor} from './../models/mongoose'
+import { ResponseCustom } from "../models";
 
 //Main logic
 /**
@@ -22,27 +22,27 @@ app.get('/', (req:any, res:any) => {
         .populate('hospital')
         .exec(
             (err, doctors:DoctorModel) => {
-                if (err) {
+                let response:ResponseCustom<DoctorModel> = new ResponseCustom<DoctorModel>(err, doctors)
+                /*if (err) {
                     return res.status(500).json({
                         ok: false,
                         message: 'Error en la base de datos',
                         errors: err
                     })
-                }
+                }*/
 
                 Doctor.count({}, (err, count) => {
+                    response.updateError(err)// = new ResponseCustom<DoctorModel>(err, doctors)
+                    if (!response.error) response.count = count;
+                    /*
                     if (err) {
                         return res.status(500).json({
                             ok: false,
                             message: 'Error en la base de datos',
                             errors: err
                         })
-                    }
-                    res.status(200).json({
-                        ok: true,
-                        result: doctors,
-                        total: count
-                    })
+                    }*/
+                    res.status(response.getStatus()).json(response);
 
 
                 })
@@ -57,7 +57,6 @@ app.get('/', (req:any, res:any) => {
  * Crea un Doctor y lo devuelve
  */
 app.post('/', auth.checkToken, (req:CustomRequest, res:Response) => {
-    let test = req.query
     let body = req.body;
     let userlogged = req.user
 
@@ -69,18 +68,16 @@ app.post('/', auth.checkToken, (req:CustomRequest, res:Response) => {
     })
 
     doctor.save((err:any, newDoctor:DoctorModel) => {
-        if (err) {
-            return res.status(500).json({
-                ok: false,
-                result: 'Error al crear el doctor',
-                errors: err
-            })
-        }
+        let response:ResponseCustom<DoctorModel> = new ResponseCustom<DoctorModel>(err, newDoctor, 'Se ha guardado correctamente el doctor '+ newDoctor.name)
+        // if (err) {
+        //     return res.status(500).json({
+        //         ok: false,
+        //         result: 'Error al crear el doctor',
+        //         errors: err
+        //     })
+        // }
 
-        res.status(200).json({
-            ok: true,
-            result: newDoctor,
-        })
+        res.status(response.getStatus()).json(response)
 
     })
 
@@ -95,6 +92,31 @@ app.put('/:id', auth.checkToken, (req:CustomRequest, res:Response) => {
     let userlogged = req.user;
 
     Doctor.findById(id, (err:any, doctor:DoctorModel) => {
+        let response:ResponseCustom<DoctorModel> = new ResponseCustom<DoctorModel>(err, doctor)
+        
+        if (!response.error){
+            doctor.name = body.name ? body.name : doctor.name;
+            doctor.image = body.image ? body.image : doctor.image;
+            doctor.hospital = body.hospital ? body.hospital : doctor.hospital;
+            doctor.user = body.user ? body.user : doctor.user;
+            doctor.save((err:any, updatedDoctor:DoctorModel) => {
+                response = new ResponseCustom<DoctorModel>(err,updatedDoctor, `Se actualizado correctamente el doctor: ${updatedDoctor.name}`) 
+                /*if (err) {
+                    return res.status(400).json({
+                        ok: false,
+                        result: 'Error al actualizar el usuario',
+                        errors: err
+                    })
+                }
+                res.status(200).json({
+                    ok: true,
+                    result: updatedDoctor
+                })*/
+            })
+        }
+
+        res.status(response.getStatus()).json(response)
+        /*
         if (err) {
             return res.status(500).json({
                 ok: false,
@@ -107,25 +129,8 @@ app.put('/:id', auth.checkToken, (req:CustomRequest, res:Response) => {
                 ok: false,
                 result: `El doctor con id ${id} no existe`
             })
-        }
-        doctor.name = body.name ? body.name : doctor.name;
-        doctor.image = body.image ? body.image : doctor.image;
-        doctor.hospital = body.hospital ? body.hospital : doctor.hospital;
-        doctor.user = body.user ? body.user : doctor.user;
-        doctor.updatedBy = userlogged._id
-        doctor.save((err:any, updatedDoctor:DoctorModel) => {
-            if (err) {
-                return res.status(400).json({
-                    ok: false,
-                    result: 'Error al actualizar el usuario',
-                    errors: err
-                })
-            }
-            res.status(200).json({
-                ok: true,
-                result: updatedDoctor
-            })
-        })
+        }*/
+        
     })
 });
 
@@ -137,6 +142,9 @@ app.delete('/:id', auth.checkToken, (req:CustomRequest, res:any) => {
     let userlogged = req.user;
 
     Doctor.findByIdAndRemove(id, (err:any, deletedDoctor) => {
+
+        let response = new ResponseCustom<DoctorModel>(err,deletedDoctor, `Se ha eliminado correctamente el doctor: ${deletedDoctor.name}`)
+        /*
         if (err) {
             return res.status(500).json({
                 ok: false,
@@ -150,11 +158,8 @@ app.delete('/:id', auth.checkToken, (req:CustomRequest, res:any) => {
                 ok: false,
                 result: `El Doctor con id ${id} no existe`
             })
-        }
-        res.status(200).json({
-            ok: true,
-            result: deletedDoctor,
-        })
+        }*/
+        res.status(response.getStatus()).json(response);
     })
 })
 
