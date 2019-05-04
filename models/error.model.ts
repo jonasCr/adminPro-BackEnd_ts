@@ -4,7 +4,8 @@
 export enum ErrorsCustom {
     notFound = 1,
     wrongPassword,
-    userUnauthorize
+    userUnauthorize,
+    invalidModel
 }
 
 export class Error{
@@ -32,8 +33,8 @@ export class Error{
                 return 'No se ha encontrado ningún registro';
             case ErrorsCustom.wrongPassword:
                 return 'La contraseña no es correcta';
-            case error.errors:
-                return 'toimemetusai'
+            case ErrorsCustom.invalidModel:
+                return 'Ese modelo no existe'
             default:
                 console.error(error);
                 return 'Ha occurido un error desconocido'

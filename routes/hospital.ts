@@ -77,18 +77,10 @@ app.post('/', auth.checkToken, (req:CustomRequest, res) => {
     })
 
     hospital.save((err, newHospital:HospitalModel) => {
-        if (err) {
-            return res.status(500).json({
-                ok: false,
-                result: 'Error al crear el hospital',
-                errors: err
-            })
-        }
+        
+        let response = new ResponseCustom<HospitalModel>(err,newHospital);
 
-        res.status(200).json({
-            ok: true,
-            result: newHospital,
-        })
+        res.status(response.getStatus()).json(response);
 
     })
 
@@ -110,21 +102,6 @@ app.put('/:id', auth.checkToken, (req:CustomRequest, res) => {
             return res.status(response.getStatus()).json({response})
         }
 
-
-        /*
-        if (err) {
-            return res.status(500).json({
-                ok: false,
-                result: 'Error al buscar el hospital',
-                errors: err
-            })
-        }
-        if (!hospital) {
-            return res.status(400).json({
-                ok: false,
-                result: `El hospital con id ${id} no existe`
-            })
-        }*/
         hospital.name = body.name ? body.name : hospital.name;
         hospital.updatedBy = userlogged._id;
 
@@ -134,18 +111,6 @@ app.put('/:id', auth.checkToken, (req:CustomRequest, res) => {
 
             return res.status(response.getStatus()).json({response})
 
-            /* 
-            if (err) {
-                return res.status(400).json({
-                    ok: false,
-                    result: 'Error al actualizar el hospital',
-                    errors: err
-                })
-            }
-            res.status(200).json({
-                ok: true,
-                result: updatedHospital
-            })*/
         })
     })
 
@@ -159,26 +124,10 @@ app.delete('/:id', auth.checkToken, (req:CustomRequest, res) => {
     let userlogged = req.user;
 
     Hospital.findByIdAndRemove(id, (err, deletedHospital) => {
-        if (err) {
-            return res.status(500).json({
-                ok: false,
-                result: 'Error al eliminar el usuario',
-                errors: err
-            })
-        }
 
-
-        if (!deletedHospital) {
-            return res.status(400).json({
-                ok: false,
-                result: `El hospital con id ${id} no existe`
-            })
-        }
-
-        res.status(200).json({
-            ok: true,
-            result: deletedHospital,
-        })
+        let response = new ResponseCustom<HospitalModel>(err, deletedHospital, 'El hospital ha sido borrado');
+        
+        res.status(response.getStatus()).json(response)
     })
 
 })
