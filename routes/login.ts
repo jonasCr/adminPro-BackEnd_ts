@@ -16,38 +16,27 @@ app.post('/', (req:CustomRequest, res) => {
 
     User.findOne({ email: body.userName }, (err, user:UserModel) => {
 
-        let response = new ResponseCustom<UserModel>(err, user)
+        let response = new ResponseCustom<UserModel>(err, user);
 
-        /*
-        //Si occure un error en la BBDD
-        if (err) {
-            return res.status(500).json({
-                ok: false,
-                result: `Error al encontrar el usuario ${body.userName}`,
-                errors: err
-            })
+        let token:string;
+
+        if (!response.error){
+            if (!bcrypt.compareSync(body.password, user.password)) {
+                response.result = null;
+                response.error = new Error(ErrorsCustom.wrongPassword);
+                return res.status(response.getStatus()).json(response);
+            }
+            
+            user.password = '****'
+            token = jwt.sign({ user: user }, SEED, { expiresIn: 14400 }) //4 horas
+            //Crear el token
+            user.token = jwt.sign({ user: user }, SEED, { expiresIn: 14400 }) //4 horas
+            console.log(token);
+            response.result = user;
+
         }
-
-        //Si no existe el usuario en la BBDD
-        if (!user) {
-            return res.status(400).json({
-                ok: false,
-                result: `No existe el usuario ${body.userName}`
-            })
-        }
-        */
-        //Si la contraseña es incorrecta
-        if (!bcrypt.compareSync(body.password, user.password)) {
-            response.result = null;
-            response.error = new Error(ErrorsCustom.wrongPassword);
-            return res.status(response.getStatus()).json(response);
-        }
-
-        delete user.password;
-        //Crear el token
-        user.token = jwt.sign({ user: user }, SEED, { expiresIn: 14400 }) //4 horas
-
-        res.status(response.getStatus()).json(response)
+        
+        res.status(response.getStatus()).json({response,token})
     })
 
 

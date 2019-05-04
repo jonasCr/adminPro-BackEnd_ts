@@ -61,8 +61,11 @@ export class ResponseCustom<T> {
      * Permite resignar el error y actualizar el status
      */
     updateError(err){
-        this.error = err ? new Error(err) : this.error;
-        this.status = this.error.getStatus();
+        if (err){
+            this.error = new Error(err);
+            this.status = this.error.getStatus();
+        }
+        
     }
 
     

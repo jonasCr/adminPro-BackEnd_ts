@@ -1,4 +1,4 @@
-import express, { Request } from 'express';
+import express, { Request, response } from 'express';
 let app = express();
 
 import * as auth from './../middleware/auth';
@@ -13,13 +13,19 @@ import { ResponseCustom } from '../models';
 app.get('/', (req:CustomRequest, res) => {
     let startFrom = req.query.startWith || 0
     startFrom = Number(startFrom);
+/*
+    res.status(200).json({
+        ok:true,
+        result: 'iii'
+    })*/
 
     Hospital.find({})
         .skip(startFrom)
         .limit(5)
         .populate('updatedBy', 'name email')
         .exec(
-            (err, hospitals:HospitalModel) => {
+            (err, hospitals:HospitalModel[]) => {
+                console.log(hospitals);
                 let response = new ResponseCustom<HospitalModel[]>(err, hospitals);
                 /*
                 if (err) {
@@ -49,6 +55,7 @@ app.get('/', (req:CustomRequest, res) => {
 
                 }
 
+                console.log(response);
                 res.status(response.getStatus()).json(response);
             })
 

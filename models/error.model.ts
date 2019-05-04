@@ -23,12 +23,17 @@ export class Error{
     }
 
     getMessageError(error:any):string{
+        if (error.errors) {
+            let e = Object.keys(error.errors)[0];
+            return error.errors[e].message;
+        }
         switch (error) {
             case ErrorsCustom.notFound:
                 return 'No se ha encontrado ningún registro';
             case ErrorsCustom.wrongPassword:
                 return 'La contraseña no es correcta';
-
+            case error.errors:
+                return 'toimemetusai'
             default:
                 console.error(error);
                 return 'Ha occurido un error desconocido'
