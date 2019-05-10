@@ -4,8 +4,8 @@ let app = express();
 import * as auth from './../middleware/auth';
 
 import {Hospital} from './../models/mongoose/'
-import { HospitalModel, CustomRequest } from '../models/interfaces';
-import { ResponseCustom } from '../models';
+import { HospitalModel, CustomRequest, Role } from '../models/interfaces';
+import { ResponseCustom, ErrorsCustom } from '../models';
 
 /**
  * Devuelve la lista de los hospitales
@@ -19,7 +19,7 @@ app.get('/', (req:CustomRequest, res) => {
         .limit(5)
         .populate('updatedBy', 'name email')
         .exec(
-            (err, hospitals:HospitalModel) => {
+            (err, hospitals:HospitalModel[]) => {
                 let response = new ResponseCustom<HospitalModel[]>(err, hospitals);
                 /*
                 if (err) {
@@ -61,29 +61,36 @@ app.get('/', (req:CustomRequest, res) => {
  */
 app.post('/', auth.checkToken, (req:CustomRequest, res) => {
     let body = req.body;
-    let userlogged = req.user
+    let userlogged = req.user;
+    let response:ResponseCustom<HospitalModel>;
 
-    let hospital = new Hospital({
-        name: body.name,
-        updatedBy: userlogged._id,
-        image: body.image,
-    })
-
-    hospital.save((err, newHospital:HospitalModel) => {
-        if (err) {
-            return res.status(500).json({
-                ok: false,
-                result: 'Error al crear el hospital',
-                errors: err
-            })
-        }
-
-        res.status(200).json({
-            ok: true,
-            result: newHospital,
+    if (userlogged.role === Role.admin || true){
+        let hospital = new Hospital({
+            name: body.name,
+            updatedBy: userlogged._id,
+            image: body.image,
         })
 
-    })
+        hospital.save((err, newHospital:HospitalModel) => {
+            response = new ResponseCustom<HospitalModel>(err,newHospital,`Se ha creado correctamente el hospital: ${newHospital.name}`);
+            /*
+            if (err) {
+                return res.status(500).json({
+                    ok: false,
+                    result: 'Error al crear el hospital',
+                    errors: err
+                })
+            }
+            */
+           
+
+        })
+    }else {
+        response = new ResponseCustom<HospitalModel>(ErrorsCustom.userUnauthorize);
+    }
+
+    res.status(response.getStatus()).json(response);
+    
 
 })
 

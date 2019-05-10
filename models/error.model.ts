@@ -28,7 +28,8 @@ export class Error{
                 return 'No se ha encontrado ningún registro';
             case ErrorsCustom.wrongPassword:
                 return 'La contraseña no es correcta';
-
+            case ErrorsCustom.userUnauthorize:
+                return 'No tienes los permisos adecuado para realizar la operación'
             default:
                 console.error(error);
                 return 'Ha occurido un error desconocido'
@@ -42,7 +43,7 @@ export class Error{
             case ErrorsCustom.wrongPassword:
                 return 401;
             case ErrorsCustom.userUnauthorize:
-                return 401;
+                return 403;
             default:
                 return 500;
         }

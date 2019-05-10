@@ -16,7 +16,9 @@ app.post('/', (req:CustomRequest, res) => {
 
     User.findOne({ email: body.userName }, (err, user:UserModel) => {
 
-        let response = new ResponseCustom<UserModel>(err, user)
+        let response = new ResponseCustom<UserModel>(err, user);
+
+        
 
         /*
         //Si occure un error en la BBDD

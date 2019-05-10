@@ -13,7 +13,6 @@ app.get('/:model/:fileName', (req:CustomRequest, res, next) => {
     let fileName:string = req.params.fileName;
 
 
-
     if (!isModelValid(model)) {
         return res.status(400).json({
             ok: false,
