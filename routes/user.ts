@@ -6,7 +6,7 @@ import * as auth from './../middleware/auth'
 
 
 import {User} from '../models/mongoose/user'
-import { CustomRequest, UserModel } from '../models';
+import { CustomRequest, UserModel, ResponseCustom } from '../models';
 
 
 /**
@@ -50,7 +50,7 @@ app.get('/', (req:CustomRequest, res:any) => {
 /**
  * Crea una nuevo usuario y lo devuelve
  */
-app.post('/', auth.checkToken, (req:CustomRequest, res:any) => {
+app.post('/', auth.checkToken, (req:CustomRequest, res) => {
     let body = req.body;
     let userlogged = req.user
 
@@ -64,6 +64,9 @@ app.post('/', auth.checkToken, (req:CustomRequest, res:any) => {
     })
 
     user.save((err:any, newUser:UserModel) => {
+
+        let response  = new ResponseCustom<UserModel>(err,newUser, `Usuario creado correctamente`);
+        /*
         if (err) {
             return res.status(500).json({
                 ok: false,
@@ -76,6 +79,9 @@ app.post('/', auth.checkToken, (req:CustomRequest, res:any) => {
             ok: true,
             result: newUser,
         })
+        */
+
+        res.status(response.getStatus()).json(response);
     })
 
 });
@@ -91,6 +97,9 @@ app.put('/:id', auth.checkToken, (req:CustomRequest, res:any) => {
     let userlogged = req.user
 
     User.findById(id, (err:any, user:UserModel) => {
+
+        let response = new ResponseCustom<UserModel>(err,user);
+        /*
         if (err) {
             return res.status(500).json({
                 ok: false,
@@ -104,29 +113,36 @@ app.put('/:id', auth.checkToken, (req:CustomRequest, res:any) => {
                 ok: false,
                 result: `El usuario con id ${id} no existe`
             })
-        }
+        }*/
 
-        user.name = body.name;
-        user.email = body.email;
-        user.role = user.role;
+        if (!response.error){
+            user.name = body.name ? body.name : user.name;
+            user.email = body.email ? body.email: user.email;
+            user.role = user.role ?user.role : user.role;
+            user.createdBy = userlogged._id
+    
+            user.save((err:any, updatedUser:UserModel) => {
+    
+                updatedUser.password = '****';
+    
+                response = new ResponseCustom<UserModel>(err, updatedUser, 'El usuario se ha guardado correctamente');
 
-        user.save((err:any, updatedUser:UserModel) => {
-            if (err) {
-                return res.status(400).json({
-                    ok: false,
-                    result: 'Error al actualizar el usuario',
-                    errors: err
-                })
-            }
+                console.log('save')
+                /*
+                if (err) {
+                    return res.status(400).json({
+                        ok: false,
+                        result: 'Error al actualizar el usuario',
+                        errors: err
+                    })
+                }
+    
+                */
+               res.status(response.getStatus()).json(response);
 
-            updatedUser.password = '';
-
-            res.status(200).json({
-                ok: true,
-                result: updatedUser
+    
             })
-        })
-
+        }
     })
 
 })
@@ -140,26 +156,9 @@ app.delete('/:id', auth.checkToken, (req:CustomRequest, res:any) => {
 
     User.findByIdAndRemove(id, (err:any, deletedUser:UserModel) => {
 
-        if (err) {
-            return res.status(500).json({
-                ok: false,
-                result: 'Error al eliminar el usuario',
-                errors: err
-            })
-        }
-
-
-        if (!deletedUser) {
-            return res.status(400).json({
-                ok: false,
-                result: `El usuario con id ${id} no existe`
-            })
-        }
-
-        res.status(200).json({
-            ok: true,
-            result: deletedUser,
-        })
+        let response = new ResponseCustom<UserModel>(err,deletedUser,'El usuario ha sido eliminado correctamente')
+       
+        res.status(response.getStatus()).json(response)
     })
 })
 

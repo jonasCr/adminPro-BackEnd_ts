@@ -1,4 +1,4 @@
-import express, { Request } from 'express';
+import express, { Request, response } from 'express';
 let app = express();
 
 import * as auth from './../middleware/auth';
@@ -13,6 +13,11 @@ import { ResponseCustom, ErrorsCustom } from '../models';
 app.get('/', (req:CustomRequest, res) => {
     let startFrom = req.query.startWith || 0
     startFrom = Number(startFrom);
+/*
+    res.status(200).json({
+        ok:true,
+        result: 'iii'
+    })*/
 
     Hospital.find({})
         .skip(startFrom)
@@ -20,6 +25,7 @@ app.get('/', (req:CustomRequest, res) => {
         .populate('updatedBy', 'name email')
         .exec(
             (err, hospitals:HospitalModel[]) => {
+                console.log(hospitals);
                 let response = new ResponseCustom<HospitalModel[]>(err, hospitals);
                 /*
                 if (err) {
@@ -49,6 +55,7 @@ app.get('/', (req:CustomRequest, res) => {
 
                 }
 
+                console.log(response);
                 res.status(response.getStatus()).json(response);
             })
 
@@ -71,23 +78,11 @@ app.post('/', auth.checkToken, (req:CustomRequest, res) => {
             image: body.image,
         })
 
-        hospital.save((err, newHospital:HospitalModel) => {
-            response = new ResponseCustom<HospitalModel>(err,newHospital,`Se ha creado correctamente el hospital: ${newHospital.name}`);
-            /*
-            if (err) {
-                return res.status(500).json({
-                    ok: false,
-                    result: 'Error al crear el hospital',
-                    errors: err
-                })
-            }
-            */
-           
+    hospital.save((err, newHospital:HospitalModel) => {
+        
+        let response = new ResponseCustom<HospitalModel>(err,newHospital);
 
-        })
-    }else {
-        response = new ResponseCustom<HospitalModel>(ErrorsCustom.userUnauthorize);
-    }
+        res.status(response.getStatus()).json(response);
 
     res.status(response.getStatus()).json(response);
     
@@ -110,21 +105,6 @@ app.put('/:id', auth.checkToken, (req:CustomRequest, res) => {
             return res.status(response.getStatus()).json({response})
         }
 
-
-        /*
-        if (err) {
-            return res.status(500).json({
-                ok: false,
-                result: 'Error al buscar el hospital',
-                errors: err
-            })
-        }
-        if (!hospital) {
-            return res.status(400).json({
-                ok: false,
-                result: `El hospital con id ${id} no existe`
-            })
-        }*/
         hospital.name = body.name ? body.name : hospital.name;
         hospital.updatedBy = userlogged._id;
 
@@ -134,18 +114,6 @@ app.put('/:id', auth.checkToken, (req:CustomRequest, res) => {
 
             return res.status(response.getStatus()).json({response})
 
-            /* 
-            if (err) {
-                return res.status(400).json({
-                    ok: false,
-                    result: 'Error al actualizar el hospital',
-                    errors: err
-                })
-            }
-            res.status(200).json({
-                ok: true,
-                result: updatedHospital
-            })*/
         })
     })
 
@@ -159,26 +127,10 @@ app.delete('/:id', auth.checkToken, (req:CustomRequest, res) => {
     let userlogged = req.user;
 
     Hospital.findByIdAndRemove(id, (err, deletedHospital) => {
-        if (err) {
-            return res.status(500).json({
-                ok: false,
-                result: 'Error al eliminar el usuario',
-                errors: err
-            })
-        }
 
-
-        if (!deletedHospital) {
-            return res.status(400).json({
-                ok: false,
-                result: `El hospital con id ${id} no existe`
-            })
-        }
-
-        res.status(200).json({
-            ok: true,
-            result: deletedHospital,
-        })
+        let response = new ResponseCustom<HospitalModel>(err, deletedHospital, 'El hospital ha sido borrado');
+        
+        res.status(response.getStatus()).json(response)
     })
 
 })

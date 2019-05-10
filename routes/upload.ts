@@ -1,6 +1,7 @@
 import express, { Response } from 'express';
 import fileUpload, { UploadedFile } from 'express-fileupload';
 import fs from 'fs';
+import path from 'path'
 const app = express();
 
 import {User} from './../models/mongoose/user' ;
@@ -39,7 +40,7 @@ app.put('/:model/:id', (req:CustomRequest, res:any) => {
         })
     }
 
-    let file = req.files.file;
+    let file:any = req.files.file;
     let fileType = getFileType(file)
 
     //Comprobamos que la extension es valida
@@ -51,12 +52,13 @@ app.put('/:model/:id', (req:CustomRequest, res:any) => {
     }
 
     //Creamos un nombre unico para el fichero
-    let fileName = `${id}-${new Date().getMilliseconds()}.${fileType}`;
-    let path = `./contents/${model}/${fileName}`;
+    let fileName = `${id}.${fileType}`;
+    let url = path.resolve(__dirname, `./../contents/${model}/${fileName}`); 
+    console.log(__dirname);
 
-    file.mv(path, (err:any) => {
+    file.mv(url, (err:any) => {
         if (err) {
-            res.status(500).json({
+            return res.status(500).json({
                 ok: false,
                 result: 'Error al guardar el archivo',
                 errors: err

@@ -4,7 +4,8 @@
 export enum ErrorsCustom {
     notFound = 1,
     wrongPassword,
-    userUnauthorize
+    userUnauthorize,
+    invalidModel
 }
 
 export class Error{
@@ -23,13 +24,17 @@ export class Error{
     }
 
     getMessageError(error:any):string{
+        if (error.errors) {
+            let e = Object.keys(error.errors)[0];
+            return error.errors[e].message;
+        }
         switch (error) {
             case ErrorsCustom.notFound:
                 return 'No se ha encontrado ningún registro';
             case ErrorsCustom.wrongPassword:
                 return 'La contraseña no es correcta';
-            case ErrorsCustom.userUnauthorize:
-                return 'No tienes los permisos adecuado para realizar la operación'
+            case ErrorsCustom.invalidModel:
+                return 'Ese modelo no existe'
             default:
                 console.error(error);
                 return 'Ha occurido un error desconocido'

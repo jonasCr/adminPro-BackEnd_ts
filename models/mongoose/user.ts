@@ -25,4 +25,4 @@ userSchema.plugin(uniqueValidator, { message: '{PATH} ya existe' });
 
 //Exportamos el modelo
 //El nombre de la collaection en mongoose
-export const User: Model<UserModel> = model<UserModel>('User', userSchema)
+export const User: Model<UserModel> = model<UserModel>('user', userSchema)

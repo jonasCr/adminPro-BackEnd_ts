@@ -15,4 +15,4 @@ let doctorSchema = new Schema({
     }
 }, { collection: 'doctors' })
 
-export const Doctor: Model<DoctorModel> = model<DoctorModel>('Doctor', doctorSchema)
+export const Doctor: Model<DoctorModel> = model<DoctorModel>('doctor', doctorSchema)

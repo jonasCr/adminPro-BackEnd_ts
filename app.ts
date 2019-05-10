@@ -20,8 +20,9 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
 //Conexion con la base de datos
-let db = async() => await mongoose.connect('mongodb://localhost:27017/hospitalDB', {useNewUrlParser: true});
-
+mongoose.connect('mongodb://localhost:27017/hospitalDB', {useNewUrlParser: true})
+    .then(()=> console.log('db \x1b[32m%s\x1b[0m', 'online'))
+    .catch(e => console.error(e));
 
 //Routes
 app.use('/user', userRoutes);

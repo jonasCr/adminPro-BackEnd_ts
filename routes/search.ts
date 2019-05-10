@@ -5,6 +5,7 @@ import {Hospital} from '../models/mongoose/hospital';
 import {Doctor} from '../models/mongoose/doctor';
 import {User} from '../models/mongoose/user';
 import { DoctorModel, HospitalModel, UserModel, CustomRequest } from '../models/interfaces';
+import { ResponseCustom, Error, ErrorsCustom } from '../models';
 
 //Rutas
 
@@ -18,36 +19,54 @@ app.get('/:query', async(req:CustomRequest, res, next) => {
     //let regEx = new RegExp(query, 'i')
 
     let promises:Promise<any>[] = []
-    promises.push(searchHospital(query))
-    promises.push(searchDoctors(query))
-    promises.push(searchUsers(query))
-
-
-    Promise.all(promises)
-        .then(data => {
-            res.status(200).json({
-                ok: true,
-                hospital: data[0],
-                doctors: data[1],
-                users: data[2]
+    let response:ResponseCustom<any>;
+    let result, error
+    try {
+        promises.push(searchHospital(query))
+        promises.push(searchDoctors(query))
+        promises.push(searchUsers(query))
+    
+        
+    
+    
+        let data = await Promise.all(promises);
+        result = {
+            hospital: data[0],
+            doctors: data[1],
+            users: data[2]
+        }
+        /*
+            .then(data => {
+                result = {
+                    hospital: data[0],
+                    doctors: data[1],
+                    users: data[2]
+                }
+                console.log(result);
             })
-        })
-        .catch(e => {
-            return res.status(500).json({
-                ok: false,
-                result: 'Error en la base de datos',
-                errors: e
+            .catch(e => {
+                error = e;
             })
-        })
+*/
+        console.log(response);
+        
+    } catch (e) {
+        error = e
+    }
+
+    response = new ResponseCustom<any>(error, result);
+    
+
+    res.status(response.getStatus()).json(response)
 
 })
 
 /** */
 app.post('/', async(req:CustomRequest, res) => {
-    let searchBy = req.body.searchBy; //{table: 'aaa', query: ''} 
+    let searchBy = req.body.searchBy; //{searchBy: 'aaa', query: ''} 
     let query = req.body.query;
 
-    let result
+    let result, error;
 
     try {
         switch (searchBy) {
@@ -61,29 +80,22 @@ app.post('/', async(req:CustomRequest, res) => {
                 result = await searchHospital(query);
                 break;
             default:
-                return res.status(400).json({
-                    ok: false,
-                    result: 'Colleccion invalida'
-                })
+                throw new Error(ErrorsCustom.invalidModel)
 
         }
     } catch (e) {
-        return res.status(500).json({
-            ok: false,
-            result: 'Error de base de datos'
-        })
+        error = e;
     }
 
-    res.status(200).json({
-        ok: true,
-        result: result
-    })
+    let response = new ResponseCustom<any>(error,result);
+
+    res.status(response.getStatus()).json(response);
 
 
 
 })
 
-function searchHospital(query) {
+function searchHospital(query):Promise<HospitalModel> {
     let regEx = new RegExp(query, 'i')
     return new Promise((resolve, reject) => {
         Hospital.find({ name: regEx })
@@ -99,7 +111,7 @@ function searchHospital(query) {
     })
 }
 
-function searchDoctors(query) {
+function searchDoctors(query):Promise<DoctorModel> {
     let regEx = new RegExp(query, 'i')
     return new Promise((resolve, reject) => {
         Doctor.find({ name: regEx })
@@ -116,7 +128,7 @@ function searchDoctors(query) {
     })
 }
 
-function searchUsers(query) {
+function searchUsers(query):Promise<UserModel> {
     let regEx = new RegExp(query, 'i')
     return new Promise((resolve, reject) => {
         User.find({}, 'name email role').or([{ 'name': regEx }, { 'email': regEx }])

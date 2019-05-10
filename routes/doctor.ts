@@ -22,25 +22,12 @@ app.get('/', (req:any, res:any) => {
         .exec(
             (err, doctors:DoctorModel) => {
                 let response:ResponseCustom<DoctorModel> = new ResponseCustom<DoctorModel>(err, doctors)
-                /*if (err) {
-                    return res.status(500).json({
-                        ok: false,
-                        message: 'Error en la base de datos',
-                        errors: err
-                    })
-                }*/
+                
 
                 Doctor.count({}, (err, count) => {
                     response.updateError(err)// = new ResponseCustom<DoctorModel>(err, doctors)
                     if (!response.error) response.count = count;
-                    /*
-                    if (err) {
-                        return res.status(500).json({
-                            ok: false,
-                            message: 'Error en la base de datos',
-                            errors: err
-                        })
-                    }*/
+                    
                     res.status(response.getStatus()).json(response);
 
 
