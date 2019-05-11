@@ -14,7 +14,7 @@ import { CustomRequest, UserModel, ResponseCustom } from '../models';
  */
 app.get('/', (req:CustomRequest, res:any) => {
 
-    let startFrom = req.query.startWith || 0
+    let startFrom = req.query.startFrom || 0
     startFrom = Number(startFrom);
 
     User.find({}, 'name email image role')
@@ -30,7 +30,7 @@ app.get('/', (req:CustomRequest, res:any) => {
                     })
                 }
 
-                User.count({}, (err:any, count:number) => {
+                User.countDocuments({}, (err:any, count:number) => {
                     if (err) {
                         return res.status(500).json({
                             ok: false,
@@ -38,7 +38,7 @@ app.get('/', (req:CustomRequest, res:any) => {
                             errors: err
                         })
                     }
-                    res.status(400).json({
+                    res.status(200).json({
                         ok: true,
                         result: user,
                         total: count
@@ -50,7 +50,7 @@ app.get('/', (req:CustomRequest, res:any) => {
 /**
  * Crea una nuevo usuario y lo devuelve
  */
-app.post('/', auth.checkToken, (req:CustomRequest, res) => {
+app.post('/', (req:CustomRequest, res) => {
     let body = req.body;
     let userlogged = req.user
 
@@ -60,7 +60,6 @@ app.post('/', auth.checkToken, (req:CustomRequest, res) => {
         password: bcrypt.hashSync(body.password, 10),
         image: body.image,
         role: body.role,
-        createdBy: req.user._id
     })
 
     user.save((err:any, newUser:UserModel) => {
@@ -82,6 +81,7 @@ app.post('/', auth.checkToken, (req:CustomRequest, res) => {
         */
 
         res.status(response.getStatus()).json(response);
+
     })
 
 });
@@ -94,54 +94,28 @@ app.put('/:id', auth.checkToken, (req:CustomRequest, res:any) => {
 
     let id = req.params.id;
     let body = req.body;
-    let userlogged = req.user
+    let userlogged = req.user;
+
 
     User.findById(id, (err:any, user:UserModel) => {
 
         let response = new ResponseCustom<UserModel>(err,user);
-        /*
-        if (err) {
-            return res.status(500).json({
-                ok: false,
-                result: 'Error al buscar el usuario',
-                errors: err
-            })
-        }
-
-        if (!user) {
-            return res.status(400).json({
-                ok: false,
-                result: `El usuario con id ${id} no existe`
-            })
-        }*/
+       
 
         if (!response.error){
             user.name = body.name ? body.name : user.name;
             user.email = body.email ? body.email: user.email;
-            user.role = user.role ?user.role : user.role;
-            user.createdBy = userlogged._id
+            user.role = body.role ? body.role : user.role;
     
             user.save((err:any, updatedUser:UserModel) => {
-    
                 updatedUser.password = '****';
     
                 response = new ResponseCustom<UserModel>(err, updatedUser, 'El usuario se ha guardado correctamente');
 
-                console.log('save')
-                /*
-                if (err) {
-                    return res.status(400).json({
-                        ok: false,
-                        result: 'Error al actualizar el usuario',
-                        errors: err
-                    })
-                }
-    
-                */
-               res.status(response.getStatus()).json(response);
-
-    
+                res.status(response.getStatus()).json(response);
             })
+        }else {
+            res.status(response.getStatus()).json(response);
         }
     })
 

@@ -70,13 +70,13 @@ app.post('/', async(req:CustomRequest, res) => {
 
     try {
         switch (searchBy) {
-            case 'user':
+            case 'users':
                 result = await searchUsers(query);
                 break;
-            case 'doctor':
+            case 'doctors':
                 result = await searchDoctors(query);
                 break;
-            case 'hospital':
+            case 'hospitals':
                 result = await searchHospital(query);
                 break;
             default:

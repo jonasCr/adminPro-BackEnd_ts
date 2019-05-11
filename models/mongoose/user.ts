@@ -18,7 +18,6 @@ const userSchema = new Schema({
     password: { type: String, required: [true, 'La contraseña es necesario'], },
     image: { type: String, required: false, },
     role: { type: String, required: true, default: 'USER_ROLE', enum: validRoles },
-    createdBy: { type: String, required: true }
 });
 
 userSchema.plugin(uniqueValidator, { message: '{PATH} ya existe' });

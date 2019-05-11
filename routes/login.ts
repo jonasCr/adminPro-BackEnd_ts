@@ -13,8 +13,9 @@ import { ResponseCustom, ErrorsCustom, Error } from '../models';
 app.post('/', (req:CustomRequest, res) => {
 
     let body = req.body;
+    console.log(body);
 
-    User.findOne({ email: body.userName }, (err, user:UserModel) => {
+    User.findOne({ email: body.email }, (err, user:UserModel) => {
 
         let response = new ResponseCustom<UserModel>(err, user);
 
@@ -31,7 +32,6 @@ app.post('/', (req:CustomRequest, res) => {
             token = jwt.sign({ user: user }, SEED, { expiresIn: 14400 }) //4 horas
             //Crear el token
             user.token = jwt.sign({ user: user }, SEED, { expiresIn: 14400 }) //4 horas
-            console.log(token);
             response.result = user;
 
         }
