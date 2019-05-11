@@ -4,8 +4,8 @@ let app = express();
 import * as auth from './../middleware/auth';
 
 import {Hospital} from './../models/mongoose/'
-import { HospitalModel, CustomRequest } from '../models/interfaces';
-import { ResponseCustom } from '../models';
+import { HospitalModel, CustomRequest, Role } from '../models/interfaces';
+import { ResponseCustom, ErrorsCustom } from '../models';
 
 /**
  * Devuelve la lista de los hospitales
@@ -68,13 +68,15 @@ app.get('/', (req:CustomRequest, res) => {
  */
 app.post('/', auth.checkToken, (req:CustomRequest, res) => {
     let body = req.body;
-    let userlogged = req.user
+    let userlogged = req.user;
+    let response:ResponseCustom<HospitalModel>;
 
-    let hospital = new Hospital({
-        name: body.name,
-        updatedBy: userlogged._id,
-        image: body.image,
-    })
+    if (userlogged.role === Role.admin || true){
+        let hospital = new Hospital({
+            name: body.name,
+            updatedBy: userlogged._id,
+            image: body.image,
+        })
 
     hospital.save((err, newHospital:HospitalModel) => {
         
@@ -82,7 +84,8 @@ app.post('/', auth.checkToken, (req:CustomRequest, res) => {
 
         res.status(response.getStatus()).json(response);
 
-    })
+    res.status(response.getStatus()).json(response);
+    
 
 })
 

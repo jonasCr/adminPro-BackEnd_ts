@@ -48,7 +48,7 @@ export class Error{
             case ErrorsCustom.wrongPassword:
                 return 401;
             case ErrorsCustom.userUnauthorize:
-                return 401;
+                return 403;
             default:
                 return 500;
         }

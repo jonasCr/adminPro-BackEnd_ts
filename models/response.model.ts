@@ -9,7 +9,7 @@ import { Error, ErrorsCustom } from "./error.model";
  */
 export class ResponseCustom<T> {
 
-    status:number
+    status:number = 200;
     confirm?:string;
     error:Error | null;
     result:T | null;
@@ -47,9 +47,7 @@ export class ResponseCustom<T> {
      * Como el status no se debe mandar en la respuesta,
      * Se crear esta function para asignarlo en la logica principal y luego se elimina
      * para mandarlo al front-end:
-     * @use res.status(response.getStatus).json({
-     *     response
-     * })
+     * @use res.status(response.getStatus).json(response)
      */
     getStatus():number{
         let response = this.status;
