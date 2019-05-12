@@ -65,20 +65,6 @@ app.post('/', (req:CustomRequest, res) => {
     user.save((err:any, newUser:UserModel) => {
 
         let response  = new ResponseCustom<UserModel>(err,newUser, `Usuario creado correctamente`);
-        /*
-        if (err) {
-            return res.status(500).json({
-                ok: false,
-                result: 'Error al crear el usuario',
-                errors: err
-            })
-        }
-
-        res.status(201).json({
-            ok: true,
-            result: newUser,
-        })
-        */
 
         res.status(response.getStatus()).json(response);
 

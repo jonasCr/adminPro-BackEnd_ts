@@ -5,7 +5,7 @@ import {Hospital} from '../models/mongoose/hospital';
 import {Doctor} from '../models/mongoose/doctor';
 import {User} from '../models/mongoose/user';
 import { DoctorModel, HospitalModel, UserModel, CustomRequest } from '../models/interfaces';
-import { ResponseCustom, Error, ErrorsCustom } from '../models';
+import { ResponseCustom, Error, ErrorsCustom, Model } from '../models';
 
 //Rutas
 
@@ -35,20 +35,6 @@ app.get('/:query', async(req:CustomRequest, res, next) => {
             doctors: data[1],
             users: data[2]
         }
-        /*
-            .then(data => {
-                result = {
-                    hospital: data[0],
-                    doctors: data[1],
-                    users: data[2]
-                }
-                console.log(result);
-            })
-            .catch(e => {
-                error = e;
-            })
-*/
-        console.log(response);
         
     } catch (e) {
         error = e
@@ -63,20 +49,20 @@ app.get('/:query', async(req:CustomRequest, res, next) => {
 
 /** */
 app.post('/', async(req:CustomRequest, res) => {
-    let searchBy = req.body.searchBy; //{searchBy: 'aaa', query: ''} 
+    let searchBy:Model = req.body.searchBy; //{searchBy: 'aaa', query: ''} 
     let query = req.body.query;
 
     let result, error;
 
     try {
         switch (searchBy) {
-            case 'users':
+            case Model.user:
                 result = await searchUsers(query);
                 break;
-            case 'doctors':
+            case Model.user:
                 result = await searchDoctors(query);
                 break;
-            case 'hospitals':
+            case Model.hopital:
                 result = await searchHospital(query);
                 break;
             default:

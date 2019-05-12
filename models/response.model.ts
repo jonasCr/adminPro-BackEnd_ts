@@ -49,7 +49,7 @@ export class ResponseCustom<T> {
      * para mandarlo al front-end:
      * @use res.status(response.getStatus).json(response)
      */
-    getStatus():number{
+    getStatus(){
         let response = this.status;
         delete this.status;
         return response;

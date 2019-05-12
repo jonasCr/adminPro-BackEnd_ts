@@ -87,35 +87,12 @@ app.put('/:id', auth.checkToken, (req:CustomRequest, res:Response) => {
             doctor.user = body.user ? body.user : doctor.user;
             doctor.save((err:any, updatedDoctor:DoctorModel) => {
                 response = new ResponseCustom<DoctorModel>(err,updatedDoctor, `Se actualizado correctamente el doctor: ${updatedDoctor.name}`) 
-                /*if (err) {
-                    return res.status(400).json({
-                        ok: false,
-                        result: 'Error al actualizar el usuario',
-                        errors: err
-                    })
-                }
-                res.status(200).json({
-                    ok: true,
-                    result: updatedDoctor
-                })*/
+               
             })
         }
 
         res.status(response.getStatus()).json(response)
-        /*
-        if (err) {
-            return res.status(500).json({
-                ok: false,
-                result: 'Error al buscar el doctor',
-                errors: err
-            })
-        }
-        if (!doctor) {
-            return res.status(400).json({
-                ok: false,
-                result: `El doctor con id ${id} no existe`
-            })
-        }*/
+        
         
     })
 });
@@ -130,21 +107,7 @@ app.delete('/:id', auth.checkToken, (req:CustomRequest, res:any) => {
     Doctor.findByIdAndRemove(id, (err:any, deletedDoctor) => {
 
         let response = new ResponseCustom<DoctorModel>(err,deletedDoctor, `Se ha eliminado correctamente el doctor: ${deletedDoctor.name}`)
-        /*
-        if (err) {
-            return res.status(500).json({
-                ok: false,
-                result: 'Error al eliminar el doctor',
-                errors: err
-            })
-        }
-
-        if (!deletedDoctor) {
-            return res.status(400).json({
-                ok: false,
-                result: `El Doctor con id ${id} no existe`
-            })
-        }*/
+        
         res.status(response.getStatus()).json(response);
     })
 })

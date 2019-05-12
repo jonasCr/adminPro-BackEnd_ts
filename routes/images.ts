@@ -1,4 +1,4 @@
-import { CustomRequest } from "../models";
+import { CustomRequest, Model } from "../models";
 
 import express from 'express';
 let app = express();
@@ -9,8 +9,10 @@ import fs from 'fs';
 //Rutas
 app.get('/:model/:fileName', (req:CustomRequest, res, next) => {
 
-    let model:string = req.params.model;
+    let model:Model = req.params.model;
     let fileName:string = req.params.fileName;
+
+    console.log(model);
 
 
     if (!isModelValid(model)) {
@@ -31,8 +33,7 @@ app.get('/:model/:fileName', (req:CustomRequest, res, next) => {
 })
 
 function isModelValid(model:string) {
-    let validModel = ['doctors', 'users', 'hospitals'];
-    return validModel.includes(model);
+    return Model[model] != null;
 }
 
 

@@ -7,7 +7,7 @@ const app = express();
 import {User} from './../models/mongoose/user' ;
 import {Doctor} from './../models/mongoose/doctor' ;
 import {Hospital} from './../models/mongoose/hospital' ;
-import { DoctorModel, CustomRequest, UserModel, HospitalModel, ResponseCustom } from '../models';
+import { DoctorModel, CustomRequest, UserModel, HospitalModel, ResponseCustom, Model } from '../models';
 import { MongooseDocument } from 'mongoose';
 
 
@@ -20,7 +20,7 @@ app.use(fileUpload());
  */
 app.put('/:model/:id', (req:CustomRequest, res:any) => {
 
-    let model:string = req.params.model;
+    let model:Model = req.params.model;
     let id:string = req.params.id;
 
 
@@ -84,33 +84,25 @@ function isTypeAccepted(type:string) {
 
 function isModelValid(model:string) {
     let validModel = ['doctors', 'users', 'hospitals'];
-    return validModel.includes(model);
+    //return validModel.includes(model);
+    return Model[model] != null
 }
 
-function handleError(err, res, message) {
-    if (err) {
-        return res.status(500).json({
-            ok: false,
-            error: err,
-            message: message
-        })
-    }
-}
 
-function uploadByModel(model:string, id:string, fileName:string, res:Response) {
+function uploadByModel(model:Model, id:string, fileName:string, res:Response) {
     let document:any;
     let literal:string;
     switch (model) {
-        case 'users':
+        case Model.user:
             document = User;
             literal = 'usuario';
             break;
-        case 'doctors':
+        case Model.doctor:
             document = Doctor;
             literal = 'doctor'
             
             break;
-        case 'hospitals':
+        case Model.hopital:
         document = Hospital;
         literal = 'hospital'
         

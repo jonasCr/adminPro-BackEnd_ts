@@ -11,6 +11,7 @@ import doctorRoutes from './routes/doctor'
 import searchRoutes from './routes/search'
 import uploadRoutes from './routes/upload'
 import imagesRoutes from './routes/images'
+import { Model } from './models';
 
 
 //Inicializar variables
@@ -34,13 +35,13 @@ mongoose.connect('mongodb://localhost:27017/hospitalDB', {useNewUrlParser: true}
     .catch(e => console.error(e));
 
 //Routes
-app.use('/user', userRoutes);
-app.use('/login', loginRoutes);
-app.use('/hospital', hospitalRoutes);
-app.use('/doctor', doctorRoutes);
-app.use('/search', searchRoutes);
-app.use('/upload', uploadRoutes);
-app.use('/images', imagesRoutes);
+app.use(`/${Model.user}`, userRoutes);
+app.use(`/${Model.login}`, loginRoutes);
+app.use(`/${Model.hopital}`, hospitalRoutes);
+app.use(`/${Model.doctor}`, doctorRoutes);
+app.use(`/${Model.search}`, searchRoutes);
+app.use(`/${Model.upload}`, uploadRoutes);
+app.use(`/${Model.image}`, imagesRoutes);
 app.use('/', appRoutes);
 
 app.listen(3000, () => {
